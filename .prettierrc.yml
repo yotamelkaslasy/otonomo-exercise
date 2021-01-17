@@ -1,7 +1,6 @@
 semi: false
 arrowParens: avoid
 jsxBracketSameLine: true
-parser: babylon
 printWidth: 80
 bracketSpacing: true
 tabWidth: 2

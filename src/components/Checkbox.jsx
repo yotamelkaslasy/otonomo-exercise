@@ -1,7 +1,7 @@
 import React from 'react'
 import './Checkbox.scss'
 
-function Checkbox({ type, children, ...props }) {
+function Checkbox({ children, ...props }) {
   return (
     <label className="checkbox-label">
       <input type="checkbox" {...props} />

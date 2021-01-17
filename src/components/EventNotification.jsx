@@ -1,13 +1,16 @@
 import React from 'react'
-import './EventNotification.scss'
+
 import LevelBar from './LevelBar'
+
+import './EventNotification.scss'
 
 export default function EventNotification({
   carEvent: { vin, timestamp, fuel, wiperFluid, location },
   color = '#00c3e8',
+  style,
 }) {
   return (
-    <article className="car-event">
+    <article className="car-event" style={style}>
       <section className="car-event__vin" style={{ backgroundColor: color }}>
         {vin}
       </section>
