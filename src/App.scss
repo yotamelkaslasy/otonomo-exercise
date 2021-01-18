@@ -23,7 +23,9 @@
   }
   
   &-content {
-    height: 100%;
+    box-sizing: border-box;
+    height: calc(100% - 124px);
+    overflow-y: auto;
     border-left: 2px solid #e3e3e3;
     padding: 40px;
   }

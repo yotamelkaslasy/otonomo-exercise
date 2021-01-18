@@ -13,16 +13,25 @@ class App extends Component {
     carData: new Map(),
     carStreamers: new Map(),
     colorsMap: new Map(),
+    filteredVins: new Map(),
     newVinInput: '',
+    isFilterEventsByFuelOn: false,
   }
 
   initStreamer = vin => {
-    const { carData, carStreamers } = this.state
+    const { carData, carStreamers, filteredVins } = this.state
     const streamer = carStreamers.get(vin)
 
     streamer.subscribe(newCarData => {
       const newCarDataValue = carData.set(vin, newCarData)
-      this.setState({ carData: newCarDataValue })
+
+      if (parseFloat(newCarData.fuel) < 0.15) {
+        filteredVins.set(vin, true)
+      } else {
+        filteredVins.set(vin, false)
+      }
+
+      this.setState({ carData: newCarDataValue, filteredVins })
     })
 
     streamer.start()
@@ -49,6 +58,7 @@ class App extends Component {
   addNewVin = () => {
     const { carData, carStreamers, colorsMap } = this.state
     const newVin = this.state.newVinInput
+    if (!newVin) return
     const newCar = () => generateCarData(newVin)
     const newCarStreamer = createStreamerFrom(newCar)
     const color = faker.internet.color()
@@ -72,12 +82,13 @@ class App extends Component {
     this.setState({ newVinInput: '' })
   }
 
-  filterEventsByFuel = () => {
-    // TODO: Implement
+  toggleFilterEventsByFuel = event => {
+    const { checked } = event.target
+    this.setState({ isFilterEventsByFuelOn: checked })
   }
 
   render() {
-    const { colorsMap } = this.state
+    const { colorsMap, filteredVins, isFilterEventsByFuelOn } = this.state
 
     const InputWrapperStyle = {
       marginTop: 30,
@@ -117,7 +128,7 @@ class App extends Component {
           </div>
 
           <div style={{ width: '50%', margin: '30px auto' }}>
-            {[...this.state.carData.entries()].map(([vin, carData]) => {
+            {[...this.state.carData.entries()].map(([vin]) => {
               const { carStreamers } = this.state
               const streamer = carStreamers.get(vin)
               return (
@@ -146,12 +157,17 @@ class App extends Component {
 
         <section className="App-section">
           <header className="App-header">
-            <Checkbox onClick={() => this.filterEventsByFuel}>
+            <Checkbox
+              defaultChecked={isFilterEventsByFuelOn}
+              onClick={event => this.toggleFilterEventsByFuel(event)}>
               Filter events where fuel level is under 15%
             </Checkbox>
           </header>
           <div className="App-content">
             {[...this.state.carData.entries()].map(([vin, carData]) => {
+              if (filteredVins.get(vin) && isFilterEventsByFuelOn) {
+                return null
+              }
               return (
                 <EventNotification
                   key={vin}
